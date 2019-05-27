@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--scan：配置文件发生更改，重新加载；scanPeriod 配置修改时间间隔-->
+<configuration scan="true" scanPeriod="60 seconds">
+    <!--name：自定义名字-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--日志输出格式-->
+        <!--%d:代表日期；%thread：当前线程；%-5；%n：换行-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="permission" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--日志产生所在文件-->
+        <file>D:/logs/permission/permission.log</file>
+        <!--日志压缩规则-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>D:/logs/permission/permission.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="com.mmall.controller" level="INFO">
+        <appender-ref ref="permission"/>
+    </logger>
+
+    <!-- TRACE < DEBUG < INFO < WARN < ERROR -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--请求相关的配置-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--上下文的注解可以被识别-->
+    <context:annotation-config/>
+    <!--启动注解驱动的spring mvc 功能-->
+    <mvc:annotation-driven/>
+    <!--添加拦截器-->
+    <mvc:interceptors>
+        <bean class="com.mmall.common.HttpInterceptor"/>
+    </mvc:interceptors>
+    <!--启动包扫描功能：可以扫描的包-->
+    <context:component-scan base-package="com.mmall.controller"/>
+    <context:component-scan base-package="com.mmall.service"/>
+    <mvc:resources location="/js/" mapping="/js/**"/>
+    <mvc:resources location="/css/" mapping="/css/**"/>
+    <mvc:resources location="/bootstrap3.3.5/" mapping="/bootstrap3.3.5/**"/>
+    <mvc:resources location="/assets/" mapping="/assets/**"/>
+    <mvc:resources location="/ztree/" mapping="/ztree/**"/>
+    <!--使用自己写的上下文转换-->
+    <bean class="com.mmall.common.ApplicationContextHelper" lazy-init="false"/>
+    <!---->
+    <bean class="com.mmall.common.SpringExceptionResolver"/>
+    <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+    <!--分配request请求，指向相应的方法-->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <!--分配请求的返回格式，如返回json，还是jsp，做视图渲染-->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+    <!--当返回格式为json时，用该类来处理;id在程序com.mmall.common.SpringExceptionResolver.java中引用-->
+    <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+    <!--当返回jsp时，用该类来处理渲染，并指定该jsp的路径及后缀-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>
