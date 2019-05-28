@@ -20,6 +20,7 @@ public class AclModuleLevelDto extends SysAclModule {
 
     public static AclModuleLevelDto adapt(SysAclModule aclModule) {
         AclModuleLevelDto dto = new AclModuleLevelDto();
+//        对像转换
         BeanUtils.copyProperties(aclModule, dto);
         return dto;
     }

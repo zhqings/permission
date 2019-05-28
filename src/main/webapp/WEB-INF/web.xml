@@ -75,6 +75,17 @@
         <filter-name>DruidWebStatFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    <!--对登陆做出拦截-->
+    <filter>
+        <filter-name>loginFilter</filter-name>
+        <filter-class>com.mmall.filter.LoginFilter</filter-class>
+    </filter>
+    <!--拦截路径-->
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/sys/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
     <!--druid请求处理-->
     <servlet-mapping>
         <servlet-name>DruidStatServlet</servlet-name>

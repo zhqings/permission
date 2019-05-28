@@ -103,16 +103,27 @@ public class SysTreeService {
         }
     }
 
+    /*
+     * create by zhang 2019/5/28
+     * 模块树的操作
+     */
     public List<AclModuleLevelDto> aclModuleTree() {
+//        获取所有模块
         List<SysAclModule> aclModuleList = sysAclModuleMapper.getAllAclModule();
         List<AclModuleLevelDto> dtoList = Lists.newArrayList();
         for (SysAclModule aclModule : aclModuleList) {
+//            根据层级对模块进行封装
             dtoList.add(AclModuleLevelDto.adapt(aclModule));
         }
         return aclModuleListToTree(dtoList);
     }
 
+    /*
+     * create by zhang 2019/5/28
+     * 将权限模块做成模块树
+     */
     public List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> dtoList) {
+//        判空
         if (CollectionUtils.isEmpty(dtoList)) {
             return Lists.newArrayList();
         }

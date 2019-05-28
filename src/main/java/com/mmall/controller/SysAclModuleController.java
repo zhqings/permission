@@ -13,6 +13,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 
+/*
+ * 权限模块的操作
+ */
 @Controller
 @RequestMapping("/sys/aclModule")
 @Slf4j
@@ -23,11 +26,18 @@ public class SysAclModuleController {
     @Resource
     private SysTreeService sysTreeService;
 
+    /*
+     * 前往权限模块操作页面
+     */
     @RequestMapping("/acl.page")
     public ModelAndView page() {
         return new ModelAndView("acl");
     }
 
+    /*
+     * create by zhang 2019/5/28
+     * 保存权限
+     */
     @RequestMapping("/save.json")
     @ResponseBody
     public JsonData saveAclModule(AclModuleParam param) {
@@ -35,6 +45,10 @@ public class SysAclModuleController {
         return JsonData.success();
     }
 
+    /*
+     * create by zhang 2019/5/28
+     * 更新权限
+     */
     @RequestMapping("/update.json")
     @ResponseBody
     public JsonData updateAclModule(AclModuleParam param) {
@@ -42,6 +56,10 @@ public class SysAclModuleController {
         return JsonData.success();
     }
 
+    /*
+     * create by zhang 2019/5/28
+     * 权限模块树
+     */
     @RequestMapping("/tree.json")
     @ResponseBody
     public JsonData tree() {

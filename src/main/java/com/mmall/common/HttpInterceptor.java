@@ -33,14 +33,13 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         removeThreadLocalInfo();
     }
 
-    /*任何时候都可以调用*/
+    /*在请求之前和请求之后必定执行*/
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         String url = request.getRequestURI().toString();
         long start = (Long) request.getAttribute(START_TIME);
         long end = System.currentTimeMillis();
         log.info("request completed. url:{}, cost:{}", url, end - start);
-
         removeThreadLocalInfo();
     }
 
