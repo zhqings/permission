@@ -14,7 +14,12 @@ public class LevelUtil {
     // 0.1.2
     // 0.1.3
     // 0.4
+    /*
+     * create by zhang 2019/5/29
+     *
+     */
     public static String calculateLevel(String parentLevel, int parentId) {
+//        如果父级为空，返回root；
         if (StringUtils.isBlank(parentLevel)) {
             return ROOT;
         } else {

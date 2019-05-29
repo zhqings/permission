@@ -17,11 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +44,10 @@ public class SysTreeService {
         return aclListToTree(aclDtoList);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 角色权限树
+     */
     public List<AclModuleLevelDto> roleTree(int roleId) {
         // 1、当前用户已分配的权限点
         List<SysAcl> userAclList = sysCoreService.getCurrentUserAclList();
@@ -55,11 +55,12 @@ public class SysTreeService {
         List<SysAcl> roleAclList = sysCoreService.getRoleAclList(roleId);
         // 3、当前系统所有权限点
         List<AclDto> aclDtoList = Lists.newArrayList();
-
+//      将
         Set<Integer> userAclIdSet = userAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
         Set<Integer> roleAclIdSet = roleAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
-
+//      获得所有权限点
         List<SysAcl> allAclList = sysAclMapper.getAll();
+//        如果有该权限点，则设置显示为true；
         for (SysAcl acl : allAclList) {
             AclDto dto = AclDto.adapt(acl);
             if (userAclIdSet.contains(acl.getId())) {
@@ -72,15 +73,20 @@ public class SysTreeService {
         }
         return aclListToTree(aclDtoList);
     }
-
+/*
+ * create by zhang 2019/5/29
+ *
+ */
     public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList) {
+//        判空
         if (CollectionUtils.isEmpty(aclDtoList)) {
             return Lists.newArrayList();
         }
+//        获得所有模块的树
         List<AclModuleLevelDto> aclModuleLevelList = aclModuleTree();
-
         Multimap<Integer, AclDto> moduleIdAclMap = ArrayListMultimap.create();
         for (AclDto acl : aclDtoList) {
+//            当权限可以使用时，根据权限模块索引作键，放入树中
             if (acl.getStatus() == 1) {
                 moduleIdAclMap.put(acl.getAclModuleId(), acl);
             }
@@ -90,12 +96,16 @@ public class SysTreeService {
     }
 
     public void bindAclsWithOrder(List<AclModuleLevelDto> aclModuleLevelList, Multimap<Integer, AclDto> moduleIdAclMap) {
+//        判空
         if (CollectionUtils.isEmpty(aclModuleLevelList)) {
             return;
         }
         for (AclModuleLevelDto dto : aclModuleLevelList) {
+//          根据权限模块键值，获取权限信息
             List<AclDto> aclDtoList = (List<AclDto>) moduleIdAclMap.get(dto.getId());
+//            判空
             if (CollectionUtils.isNotEmpty(aclDtoList)) {
+//                按规则排序
                 Collections.sort(aclDtoList, aclSeqComparator);
                 dto.setAclList(aclDtoList);
             }
@@ -121,6 +131,8 @@ public class SysTreeService {
     /*
      * create by zhang 2019/5/28
      * 将权限模块做成模块树
+     * ArrayListMultimap：一值多值,通过键取的对象是一个集合；
+     *
      */
     public List<AclModuleLevelDto> aclModuleListToTree(List<AclModuleLevelDto> dtoList) {
 //        判空
@@ -130,26 +142,41 @@ public class SysTreeService {
         // level -> [aclmodule1, aclmodule2, ...] Map<String, List<Object>>
         Multimap<String, AclModuleLevelDto> levelAclModuleMap = ArrayListMultimap.create();
         List<AclModuleLevelDto> rootList = Lists.newArrayList();
-
         for (AclModuleLevelDto dto : dtoList) {
+//      根据层级将放入模块
             levelAclModuleMap.put(dto.getLevel(), dto);
+//            如果该层级是顶级，放入rootList数组中：
             if (LevelUtil.ROOT.equals(dto.getLevel())) {
                 rootList.add(dto);
             }
         }
+//        根据aclModuleSeqComparator的规则对rootList进行排序；
         Collections.sort(rootList, aclModuleSeqComparator);
+//          调用函数进行排序和封装
         transformAclModuleTree(rootList, LevelUtil.ROOT, levelAclModuleMap);
+//        返回信息数组
         return rootList;
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 对权限模块进行递归，组装成权限树
+     */
     public void transformAclModuleTree(List<AclModuleLevelDto> dtoList, String level, Multimap<String, AclModuleLevelDto> levelAclModuleMap) {
         for (int i = 0; i < dtoList.size(); i++) {
+//       获得权限模块信息
             AclModuleLevelDto dto = dtoList.get(i);
+//          组装当前部门的下一级层级
             String nextLevel = LevelUtil.calculateLevel(level, dto.getId());
+//            从map中获取该层级的所有权限模块信息
             List<AclModuleLevelDto> tempList = (List<AclModuleLevelDto>) levelAclModuleMap.get(nextLevel);
+//            如果该数组不为空，进行递归，为空，则返回；
             if (CollectionUtils.isNotEmpty(tempList)) {
+//                对该数组按规则排序
                 Collections.sort(tempList, aclModuleSeqComparator);
+//                将该数组封装进该权限模块信息
                 dto.setAclModuleList(tempList);
+//                调用权限组装程序
                 transformAclModuleTree(tempList, nextLevel, levelAclModuleMap);
             }
         }

@@ -31,11 +31,19 @@ public class SysCoreService {
     @Resource
     private SysCacheService sysCacheService;
 
+    /*
+     * create by zhang 2019/5/29
+     * 获得当前用户权限表
+     */
     public List<SysAcl> getCurrentUserAclList() {
         int userId = RequestHolder.getCurrentUser().getId();
         return getUserAclList(userId);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 获得角色权限点
+     */
     public List<SysAcl> getRoleAclList(int roleId) {
         List<Integer> aclIdList = sysRoleAclMapper.getAclIdListByRoleIdList(Lists.<Integer>newArrayList(roleId));
         if (CollectionUtils.isEmpty(aclIdList)) {
@@ -44,21 +52,33 @@ public class SysCoreService {
         return sysAclMapper.getByIdList(aclIdList);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 查询用户的权限点
+     */
     public List<SysAcl> getUserAclList(int userId) {
+//        角色为超级管理员时，返回所有权限
         if (isSuperAdmin()) {
             return sysAclMapper.getAll();
         }
+//        根据用户索引查询角色列表
         List<Integer> userRoleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
         if (CollectionUtils.isEmpty(userRoleIdList)) {
             return Lists.newArrayList();
         }
+//        通过角色列表获得对应权限点
         List<Integer> userAclIdList = sysRoleAclMapper.getAclIdListByRoleIdList(userRoleIdList);
         if (CollectionUtils.isEmpty(userAclIdList)) {
             return Lists.newArrayList();
         }
+//        通过权限点索引获得权限点信息
         return sysAclMapper.getByIdList(userAclIdList);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 查询是否是超级管理员
+     */
     public boolean isSuperAdmin() {
         // 这里是我自己定义了一个假的超级管理员规则，实际中要根据项目进行修改
         // 可以是配置文件获取，可以指定某个用户，也可以指定某个角色

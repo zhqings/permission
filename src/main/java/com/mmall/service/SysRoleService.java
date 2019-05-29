@@ -35,6 +35,10 @@ public class SysRoleService {
     @Resource
     private SysLogService sysLogService;
 
+    /*
+     * create by zhang 2019/5/29
+     * 添加新角色
+     */
     public void save(RoleParam param) {
         BeanValidator.check(param);
         if (checkExist(param.getName(), param.getId())) {
@@ -49,6 +53,10 @@ public class SysRoleService {
         sysLogService.saveRoleLog(null, role);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 更新角色
+     */
     public void update(RoleParam param) {
         BeanValidator.check(param);
         if (checkExist(param.getName(), param.getId())) {
@@ -66,14 +74,26 @@ public class SysRoleService {
         sysLogService.saveRoleLog(before, after);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 获得所有角色
+     */
     public List<SysRole> getAll() {
         return sysRoleMapper.getAll();
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 判断该角色是否存在
+     */
     private boolean checkExist(String name, Integer id) {
         return sysRoleMapper.countByName(name, id) > 0;
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 通过用户索引获得角色列表
+     */
     public List<SysRole> getRoleListByUserId(int userId) {
         List<Integer> roleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
         if (CollectionUtils.isEmpty(roleIdList)) {
@@ -82,6 +102,10 @@ public class SysRoleService {
         return sysRoleMapper.getByIdList(roleIdList);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 通过权限索引获得角色列表
+     */
     public List<SysRole> getRoleListByAclId(int aclId) {
         List<Integer> roleIdList = sysRoleAclMapper.getRoleIdListByAclId(aclId);
         if (CollectionUtils.isEmpty(roleIdList)) {
@@ -90,6 +114,10 @@ public class SysRoleService {
         return sysRoleMapper.getByIdList(roleIdList);
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 通过角色索引列表获得用户列表
+     */
     public List<SysUser> getUserListByRoleList(List<SysRole> roleList) {
         if (CollectionUtils.isEmpty(roleList)) {
             return Lists.newArrayList();

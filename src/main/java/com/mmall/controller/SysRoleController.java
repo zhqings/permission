@@ -64,6 +64,10 @@ public class SysRoleController {
         return JsonData.success(sysRoleService.getAll());
     }
 
+    /*
+     * create by zhang 2019/5/29
+     * 角色权限树
+     */
     @RequestMapping("/roleTree.json")
     @ResponseBody
     public JsonData roleTree(@RequestParam("roleId") int roleId) {
@@ -94,7 +98,7 @@ public class SysRoleController {
         List<SysUser> unselectedUserList = Lists.newArrayList();
 
         Set<Integer> selectedUserIdSet = selectedUserList.stream().map(sysUser -> sysUser.getId()).collect(Collectors.toSet());
-        for(SysUser sysUser : allUserList) {
+        for (SysUser sysUser : allUserList) {
             if (sysUser.getStatus() == 1 && !selectedUserIdSet.contains(sysUser.getId())) {
                 unselectedUserList.add(sysUser);
             }
