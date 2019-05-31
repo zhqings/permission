@@ -117,6 +117,10 @@ public class SysAclModuleService {
         return aclModule.getLevel();
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 根据索引删除权限模块
+     */
     public void delete(int aclModuleId) {
         SysAclModule aclModule = sysAclModuleMapper.selectByPrimaryKey(aclModuleId);
         Preconditions.checkNotNull(aclModule, "待删除的权限模块不存在，无法删除");

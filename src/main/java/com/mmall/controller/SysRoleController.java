@@ -74,6 +74,10 @@ public class SysRoleController {
         return JsonData.success(sysTreeService.roleTree(roleId));
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 修改权限模块
+     */
     @RequestMapping("/changeAcls.json")
     @ResponseBody
     public JsonData changeAcls(@RequestParam("roleId") int roleId, @RequestParam(value = "aclIds", required = false, defaultValue = "") String aclIds) {
@@ -82,6 +86,10 @@ public class SysRoleController {
         return JsonData.success();
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 用户和角色关系修改
+     */
     @RequestMapping("/changeUsers.json")
     @ResponseBody
     public JsonData changeUsers(@RequestParam("roleId") int roleId, @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
@@ -90,13 +98,16 @@ public class SysRoleController {
         return JsonData.success();
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 根据角色索引获取用户
+     */
     @RequestMapping("/users.json")
     @ResponseBody
     public JsonData users(@RequestParam("roleId") int roleId) {
         List<SysUser> selectedUserList = sysRoleUserService.getListByRoleId(roleId);
         List<SysUser> allUserList = sysUserService.getAll();
         List<SysUser> unselectedUserList = Lists.newArrayList();
-
         Set<Integer> selectedUserIdSet = selectedUserList.stream().map(sysUser -> sysUser.getId()).collect(Collectors.toSet());
         for (SysUser sysUser : allUserList) {
             if (sysUser.getStatus() == 1 && !selectedUserIdSet.contains(sysUser.getId())) {

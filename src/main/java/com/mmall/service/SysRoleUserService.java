@@ -31,6 +31,10 @@ public class SysRoleUserService {
     @Resource
     private SysLogMapper sysLogMapper;
 
+    /*
+     * create by zhang 2019/5/31
+     * 权限角色索引获得用户列表
+     */
     public List<SysUser> getListByRoleId(int roleId) {
         List<Integer> userIdList = sysRoleUserMapper.getUserIdListByRoleId(roleId);
         if (CollectionUtils.isEmpty(userIdList)) {
@@ -39,7 +43,12 @@ public class SysRoleUserService {
         return sysUserMapper.getByIdList(userIdList);
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 更新用户角色
+     */
     public void changeRoleUsers(int roleId, List<Integer> userIdList) {
+//        根据角色索引获得用户索引列表
         List<Integer> originUserIdList = sysRoleUserMapper.getUserIdListByRoleId(roleId);
         if (originUserIdList.size() == userIdList.size()) {
             Set<Integer> originUserIdSet = Sets.newHashSet(originUserIdList);
@@ -49,25 +58,34 @@ public class SysRoleUserService {
                 return;
             }
         }
+//        更新用户角色
         updateRoleUsers(roleId, userIdList);
         saveRoleUserLog(roleId, originUserIdList, userIdList);
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 更新用户角色
+     */
     @Transactional
-    private void updateRoleUsers(int roleId, List<Integer> userIdList) {
+    void updateRoleUsers(int roleId, List<Integer> userIdList) {
+//        删除原有关系
         sysRoleUserMapper.deleteByRoleId(roleId);
-
+//          判空
         if (CollectionUtils.isEmpty(userIdList)) {
             return;
         }
+//        封装信息
         List<SysRoleUser> roleUserList = Lists.newArrayList();
         for (Integer userId : userIdList) {
             SysRoleUser roleUser = SysRoleUser.builder().roleId(roleId).userId(userId).operator(RequestHolder.getCurrentUser().getUsername())
                     .operateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest())).operateTime(new Date()).build();
             roleUserList.add(roleUser);
         }
+//        更新用户角色
         sysRoleUserMapper.batchInsert(roleUserList);
     }
+
     private void saveRoleUserLog(int roleId, List<Integer> before, List<Integer> after) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
         sysLog.setType(LogType.TYPE_ROLE_USER);

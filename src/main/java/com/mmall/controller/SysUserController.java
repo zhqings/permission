@@ -54,7 +54,10 @@ public class SysUserController {
         PageResult<SysUser> result = sysUserService.getPageByDeptId(deptId, pageQuery);
         return JsonData.success(result);
     }
-
+    /*
+     * create by zhang 2019/5/31
+     * 根据用户索引查询用户权限树及角色树
+     */
     @RequestMapping("/acls.json")
     @ResponseBody
     public JsonData acls(@RequestParam("userId") int userId) {

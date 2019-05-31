@@ -58,7 +58,7 @@ public class SysDeptService {
         if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new ParamException("同一层级下存在相同名称的部门");
         }
-
+//对信息进行封装
         SysDept after = SysDept.builder().id(param.getId()).name(param.getName()).parentId(param.getParentId())
                 .seq(param.getSeq()).remark(param.getRemark()).build();
         after.setLevel(LevelUtil.calculateLevel(getLevel(param.getParentId()), param.getParentId()));
@@ -106,6 +106,10 @@ public class SysDeptService {
         return dept.getLevel();
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 根据部门索引删除部门
+     */
     public void delete(int deptId) {
         SysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
         Preconditions.checkNotNull(dept, "待删除的部门不存在，无法删除");

@@ -66,6 +66,10 @@ public class SysAclModuleController {
         return JsonData.success(sysTreeService.aclModuleTree());
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 删除权限模块
+     */
     @RequestMapping("/delete.json")
     @ResponseBody
     public JsonData delete(@RequestParam("id") int id) {

@@ -33,28 +33,31 @@ public class SysCoreService {
 
     /*
      * create by zhang 2019/5/29
-     * 获得当前用户权限表
+     * 根据用户索引获得当前用户权限表
      */
     public List<SysAcl> getCurrentUserAclList() {
+//        获取用户索引
         int userId = RequestHolder.getCurrentUser().getId();
         return getUserAclList(userId);
     }
 
     /*
      * create by zhang 2019/5/29
-     * 获得角色权限点
+     * 根据角色索引获得角色权限点
      */
     public List<SysAcl> getRoleAclList(int roleId) {
+//        根据角色索引获取权限模块列表
         List<Integer> aclIdList = sysRoleAclMapper.getAclIdListByRoleIdList(Lists.<Integer>newArrayList(roleId));
         if (CollectionUtils.isEmpty(aclIdList)) {
             return Lists.newArrayList();
         }
+//        根据权限模块索引获取权限模块信息
         return sysAclMapper.getByIdList(aclIdList);
     }
 
     /*
      * create by zhang 2019/5/29
-     * 查询用户的权限点
+     * 根据用户索引查询用户的权限点
      */
     public List<SysAcl> getUserAclList(int userId) {
 //        角色为超级管理员时，返回所有权限

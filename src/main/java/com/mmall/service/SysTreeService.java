@@ -32,7 +32,12 @@ public class SysTreeService {
     @Resource
     private SysAclMapper sysAclMapper;
 
+    /*
+     * create by zhang 2019/5/31
+     * 根据用户索引查询用户权限点并做成树状
+     */
     public List<AclModuleLevelDto> userAclTree(int userId) {
+//        根据用户索引查询用户权限点
         List<SysAcl> userAclList = sysCoreService.getUserAclList(userId);
         List<AclDto> aclDtoList = Lists.newArrayList();
         for (SysAcl acl : userAclList) {
@@ -55,7 +60,6 @@ public class SysTreeService {
         List<SysAcl> roleAclList = sysCoreService.getRoleAclList(roleId);
         // 3、当前系统所有权限点
         List<AclDto> aclDtoList = Lists.newArrayList();
-//      将
         Set<Integer> userAclIdSet = userAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
         Set<Integer> roleAclIdSet = roleAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
 //      获得所有权限点
@@ -73,10 +77,11 @@ public class SysTreeService {
         }
         return aclListToTree(aclDtoList);
     }
-/*
- * create by zhang 2019/5/29
- *
- */
+
+    /*
+     * create by zhang 2019/5/29
+     * 将权限模块制做成树
+     */
     public List<AclModuleLevelDto> aclListToTree(List<AclDto> aclDtoList) {
 //        判空
         if (CollectionUtils.isEmpty(aclDtoList)) {
@@ -95,6 +100,10 @@ public class SysTreeService {
         return aclModuleLevelList;
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 递归处理权限模块
+     */
     public void bindAclsWithOrder(List<AclModuleLevelDto> aclModuleLevelList, Multimap<Integer, AclDto> moduleIdAclMap) {
 //        判空
         if (CollectionUtils.isEmpty(aclModuleLevelList)) {
@@ -243,7 +252,7 @@ public class SysTreeService {
         }
     }
 
-    /*根据seq的对比*/
+    /*根据seq的大小的对比*/
     public Comparator<DeptLevelDto> deptSeqComparator = new Comparator<DeptLevelDto>() {
         public int compare(DeptLevelDto o1, DeptLevelDto o2) {
             return o1.getSeq() - o2.getSeq();

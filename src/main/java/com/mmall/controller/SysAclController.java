@@ -46,7 +46,10 @@ public class SysAclController {
     public JsonData list(@RequestParam("aclModuleId") Integer aclModuleId, PageQuery pageQuery) {
         return JsonData.success(sysAclService.getPageByAclModuleId(aclModuleId, pageQuery));
     }
-
+/*
+ * create by zhang 2019/5/31
+ * 根据权限索引获得角色列表
+ */
     @RequestMapping("acls.json")
     @ResponseBody
     public JsonData acls(@RequestParam("aclId") int aclId) {

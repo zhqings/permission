@@ -52,6 +52,10 @@ public class SysDeptController {
         return JsonData.success();
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 根据部门索引删除部门信息
+     */
     @RequestMapping("/delete.json")
     @ResponseBody
     public JsonData delete(@RequestParam("id") int id) {

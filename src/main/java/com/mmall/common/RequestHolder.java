@@ -4,6 +4,10 @@ import com.mmall.model.SysUser;
 
 import javax.servlet.http.HttpServletRequest;
 
+/*
+ * create by zhang 2019/5/31
+ * 存储请求参数，用户信息
+ */
 public class RequestHolder {
 
     private static final ThreadLocal<SysUser> userHolder = new ThreadLocal<SysUser>();

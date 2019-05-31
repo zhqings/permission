@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Slf4j
 public class AclControlFilter implements Filter {
-
+    // 不拦截的路径集合
     private static Set<String> exclusionUrlSet = Sets.newConcurrentHashSet();
 
     private final static String noAuthUrl = "/sys/user/noAuth.page";
@@ -80,7 +80,7 @@ public class AclControlFilter implements Filter {
         }
     }
 
-    private void clientRedirect(String url, HttpServletResponse response) throws IOException{
+    private void clientRedirect(String url, HttpServletResponse response) throws IOException {
         response.setHeader("Content-Type", "text/html");
         response.getWriter().print("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                 + "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" + "<head>\n" + "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>\n"

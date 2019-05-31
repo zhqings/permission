@@ -27,33 +27,48 @@ public class SysRoleAclService {
     @Resource
     private SysLogMapper sysLogMapper;
 
+    /*
+     * create by zhang 2019/5/31
+     * 通过角色索引，权限模块索引
+     */
     public void changeRoleAcls(Integer roleId, List<Integer> aclIdList) {
+//        根据roleId来获取权限索引列表
         List<Integer> originAclIdList = sysRoleAclMapper.getAclIdListByRoleIdList(Lists.newArrayList(roleId));
+//        如果传进行的索引和原有索引相同
         if (originAclIdList.size() == aclIdList.size()) {
             Set<Integer> originAclIdSet = Sets.newHashSet(originAclIdList);
             Set<Integer> aclIdSet = Sets.newHashSet(aclIdList);
+//            移除相同的索引
             originAclIdSet.removeAll(aclIdSet);
             if (CollectionUtils.isEmpty(originAclIdSet)) {
                 return;
             }
         }
+//        更新索引
         updateRoleAcls(roleId, aclIdList);
         saveRoleAclLog(roleId, originAclIdList, aclIdList);
     }
 
+    /*
+     * create by zhang 2019/5/31
+     * 更新角色权限
+     */
     @Transactional
     public void updateRoleAcls(int roleId, List<Integer> aclIdList) {
+//        删除原有权限
         sysRoleAclMapper.deleteByRoleId(roleId);
-
+//        判空
         if (CollectionUtils.isEmpty(aclIdList)) {
             return;
         }
         List<SysRoleAcl> roleAclList = Lists.newArrayList();
-        for(Integer aclId : aclIdList) {
+//        封装角色权限信息
+        for (Integer aclId : aclIdList) {
             SysRoleAcl roleAcl = SysRoleAcl.builder().roleId(roleId).aclId(aclId).operator(RequestHolder.getCurrentUser().getUsername())
                     .operateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest())).operateTime(new Date()).build();
             roleAclList.add(roleAcl);
         }
+//        更新权限信息
         sysRoleAclMapper.batchInsert(roleAclList);
     }
 
