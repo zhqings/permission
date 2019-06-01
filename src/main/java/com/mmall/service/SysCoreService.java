@@ -92,15 +92,21 @@ public class SysCoreService {
         return false;
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 是否有权限访问某个路径
+     */
     public boolean hasUrlAcl(String url) {
+//        超级管理员，返回真
         if (isSuperAdmin()) {
             return true;
         }
+//        当权限包含此页面时，返回真
         List<SysAcl> aclList = sysAclMapper.getByUrl(url);
         if (CollectionUtils.isEmpty(aclList)) {
             return true;
         }
-
+//      取出权限模块
         List<SysAcl> userAclList = getCurrentUserAclListFromCache();
         Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
 
@@ -122,7 +128,7 @@ public class SysCoreService {
         return false;
     }
 
-    //判断是否需要从redis中获取用户权限
+    //从缓存或者数据中取出权限模块
     public List<SysAcl> getCurrentUserAclListFromCache() {
         int userId = RequestHolder.getCurrentUser().getId();
         String cacheValue = sysCacheService.getFromCache(CacheKeyConstants.USER_ACLS, String.valueOf(userId));

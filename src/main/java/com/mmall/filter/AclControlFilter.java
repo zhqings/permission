@@ -30,6 +30,10 @@ public class AclControlFilter implements Filter {
 
     private final static String noAuthUrl = "/sys/user/noAuth.page";
 
+    /*
+     * create by zhang 2019/6/1
+     * 过滤白名单
+     */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         String exclusionUrls = filterConfig.getInitParameter("exclusionUrls");
@@ -44,12 +48,12 @@ public class AclControlFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String servletPath = request.getServletPath();
         Map requestMap = request.getParameterMap();
-
+//      如果路径在白名单中，不做处理
         if (exclusionUrlSet.contains(servletPath)) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-
+//      当用户信息不存在，则做无权限处理
         SysUser sysUser = RequestHolder.getCurrentUser();
         if (sysUser == null) {
             log.info("someone visit {}, but no login, parameter:{}", servletPath, JsonMapper.obj2String(requestMap));
@@ -67,14 +71,20 @@ public class AclControlFilter implements Filter {
         return;
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 无权限时的处理
+     */
     private void noAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String servletPath = request.getServletPath();
+//          当路径以.json结束，则返回
         if (servletPath.endsWith(".json")) {
             JsonData jsonData = JsonData.fail("没有访问权限，如需要访问，请联系管理员");
             response.setHeader("Content-Type", "application/json");
             response.getWriter().print(JsonMapper.obj2String(jsonData));
             return;
         } else {
+//            其他字符结束，调方法，跳到没有权限访问的页面
             clientRedirect(noAuthUrl, response);
             return;
         }

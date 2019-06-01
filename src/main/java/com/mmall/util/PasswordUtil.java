@@ -1,8 +1,10 @@
 package com.mmall.util;
 
+import com.google.common.base.Splitter;
 import com.mmall.model.SysUser;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class PasswordUtil {
@@ -40,12 +42,16 @@ public class PasswordUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String encrypt = MD5Util.encrypt("123456");
-        System.out.println(encrypt);
-        System.out.println(randomPassword());
-        Thread.sleep(100);
-        System.out.println(randomPassword());
-        Thread.sleep(100);
-        System.out.println(randomPassword());
+        List<String> strings = Splitter.on(",").trimResults().omitEmptyStrings().splitToList("231,3232,21, ,23,21 , , 22");
+        for (String string : strings) {
+            System.out.println(string);
+        }
+//        String encrypt = MD5Util.encrypt("123456");
+//        System.out.println(encrypt);
+//        System.out.println(randomPassword());
+//        Thread.sleep(100);
+//        System.out.println(randomPassword());
+//        Thread.sleep(100);
+//        System.out.println(randomPassword());
     }
 }

@@ -13,12 +13,7 @@ import com.mmall.dao.SysRoleMapper;
 import com.mmall.dao.SysUserMapper;
 import com.mmall.dto.SearchLogDto;
 import com.mmall.exception.ParamException;
-import com.mmall.model.SysAcl;
-import com.mmall.model.SysAclModule;
-import com.mmall.model.SysDept;
-import com.mmall.model.SysLogWithBLOBs;
-import com.mmall.model.SysRole;
-import com.mmall.model.SysUser;
+import com.mmall.model.*;
 import com.mmall.param.SearchLogParam;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.IpUtil;
@@ -55,11 +50,11 @@ public class SysLogService {
     public void recover(int id) {
         SysLogWithBLOBs sysLog = sysLogMapper.selectByPrimaryKey(id);
         Preconditions.checkNotNull(sysLog, "待还原的记录不存在");
-        switch (sysLog.getType()){
+        switch (sysLog.getType()) {
             case LogType.TYPE_DEPT:
                 SysDept beforeDept = sysDeptMapper.selectByPrimaryKey(sysLog.getTargetId());
                 Preconditions.checkNotNull(beforeDept, "待还原的部门已经不存在了");
-                if (StringUtils.isBlank(sysLog.getNewValue())  || StringUtils.isBlank(sysLog.getOldValue())) {
+                if (StringUtils.isBlank(sysLog.getNewValue()) || StringUtils.isBlank(sysLog.getOldValue())) {
                     throw new ParamException("新增和删除操作不做还原");
                 }
                 SysDept afterDept = JsonMapper.string2Obj(sysLog.getOldValue(), new TypeReference<SysDept>() {
@@ -73,7 +68,7 @@ public class SysLogService {
             case LogType.TYPE_USER:
                 SysUser beforeUser = sysUserMapper.selectByPrimaryKey(sysLog.getTargetId());
                 Preconditions.checkNotNull(beforeUser, "待还原的用户已经不存在了");
-                if (StringUtils.isBlank(sysLog.getNewValue())  || StringUtils.isBlank(sysLog.getOldValue())) {
+                if (StringUtils.isBlank(sysLog.getNewValue()) || StringUtils.isBlank(sysLog.getOldValue())) {
                     throw new ParamException("新增和删除操作不做还原");
                 }
                 SysUser afterUser = JsonMapper.string2Obj(sysLog.getOldValue(), new TypeReference<SysUser>() {
@@ -87,7 +82,7 @@ public class SysLogService {
             case LogType.TYPE_ACL_MODULE:
                 SysAclModule beforeAclModule = sysAclModuleMapper.selectByPrimaryKey(sysLog.getTargetId());
                 Preconditions.checkNotNull(beforeAclModule, "待还原的权限模块已经不存在了");
-                if (StringUtils.isBlank(sysLog.getNewValue())  || StringUtils.isBlank(sysLog.getOldValue())) {
+                if (StringUtils.isBlank(sysLog.getNewValue()) || StringUtils.isBlank(sysLog.getOldValue())) {
                     throw new ParamException("新增和删除操作不做还原");
                 }
                 SysAclModule afterAclModule = JsonMapper.string2Obj(sysLog.getOldValue(), new TypeReference<SysAclModule>() {
@@ -101,7 +96,7 @@ public class SysLogService {
             case LogType.TYPE_ACL:
                 SysAcl beforeAcl = sysAclMapper.selectByPrimaryKey(sysLog.getTargetId());
                 Preconditions.checkNotNull(beforeAcl, "待还原的权限点已经不存在了");
-                if (StringUtils.isBlank(sysLog.getNewValue())  || StringUtils.isBlank(sysLog.getOldValue())) {
+                if (StringUtils.isBlank(sysLog.getNewValue()) || StringUtils.isBlank(sysLog.getOldValue())) {
                     throw new ParamException("新增和删除操作不做还原");
                 }
                 SysAcl afterAcl = JsonMapper.string2Obj(sysLog.getOldValue(), new TypeReference<SysAcl>() {
@@ -115,7 +110,7 @@ public class SysLogService {
             case LogType.TYPE_ROLE:
                 SysRole beforeRole = sysRoleMapper.selectByPrimaryKey(sysLog.getTargetId());
                 Preconditions.checkNotNull(beforeRole, "待还原的角色已经不存在了");
-                if (StringUtils.isBlank(sysLog.getNewValue())  || StringUtils.isBlank(sysLog.getOldValue())) {
+                if (StringUtils.isBlank(sysLog.getNewValue()) || StringUtils.isBlank(sysLog.getOldValue())) {
                     throw new ParamException("新增和删除操作不做还原");
                 }
                 SysRole afterRole = JsonMapper.string2Obj(sysLog.getOldValue(), new TypeReference<SysRole>() {
@@ -138,7 +133,8 @@ public class SysLogService {
                 sysRoleUserService.changeRoleUsers(sysLog.getTargetId(), JsonMapper.string2Obj(sysLog.getOldValue(), new TypeReference<List<Integer>>() {
                 }));
                 break;
-            default:;
+            default:
+                ;
         }
     }
 
@@ -167,26 +163,43 @@ public class SysLogService {
             throw new ParamException("传入的日期格式有问题，正确格式为：yyyy-MM-dd HH:mm:ss");
         }
         int count = sysLogMapper.countBySearchDto(dto);
-        if (count > 0){
+        if (count > 0) {
             List<SysLogWithBLOBs> logList = sysLogMapper.getPageListBySearchDto(dto, page);
             return PageResult.<SysLogWithBLOBs>builder().total(count).data(logList).build();
         }
         return PageResult.<SysLogWithBLOBs>builder().build();
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 保存部门日志
+     */
     public void saveDeptLog(SysDept before, SysDept after) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
+//        设置日志类型
         sysLog.setType(LogType.TYPE_DEPT);
+//        部门索引
         sysLog.setTargetId(after == null ? before.getId() : after.getId());
+//        旧值
         sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+//        新值
         sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+//        操作者
         sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
+//        操作ip
         sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+//        操作时间
         sysLog.setOperateTime(new Date());
+//        日志状态
         sysLog.setStatus(1);
+//        添加
         sysLogMapper.insertSelective(sysLog);
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 用户日志
+     */
     public void saveUserLog(SysUser before, SysUser after) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
         sysLog.setType(LogType.TYPE_USER);
@@ -200,6 +213,10 @@ public class SysLogService {
         sysLogMapper.insertSelective(sysLog);
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 权限模块日志
+     */
     public void saveAclModuleLog(SysAclModule before, SysAclModule after) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
         sysLog.setType(LogType.TYPE_ACL_MODULE);
@@ -213,6 +230,10 @@ public class SysLogService {
         sysLogMapper.insertSelective(sysLog);
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 权限日志
+     */
     public void saveAclLog(SysAcl before, SysAcl after) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
         sysLog.setType(LogType.TYPE_ACL);
@@ -226,10 +247,48 @@ public class SysLogService {
         sysLogMapper.insertSelective(sysLog);
     }
 
+    /*
+     * create by zhang 2019/6/1
+     * 角色日志
+     */
     public void saveRoleLog(SysRole before, SysRole after) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
         sysLog.setType(LogType.TYPE_ROLE);
         sysLog.setTargetId(after == null ? before.getId() : after.getId());
+        sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+        sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+        sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperateTime(new Date());
+        sysLog.setStatus(1);
+        sysLogMapper.insertSelective(sysLog);
+    }
+
+    /*
+     * create by zhang 2019/6/1
+     * 角色权限日志
+     */
+    public void saveRoleAclLog(int roleId, List<SysRoleAcl> before, List<SysRoleAcl> after) {
+        SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
+        sysLog.setType(LogType.TYPE_ROLE_ACL);
+        sysLog.setTargetId(roleId);
+        sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
+        sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
+        sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperateTime(new Date());
+        sysLog.setStatus(1);
+        sysLogMapper.insertSelective(sysLog);
+    }
+
+    /*
+     * create by zhang 2019/6/1
+     * 角色用户日志
+     */
+    public void saveRoleUserLog(int roleId, List<SysRoleUser> before, List<SysRoleUser> after) {
+        SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
+        sysLog.setType(LogType.TYPE_ROLE_USER);
+        sysLog.setTargetId(roleId);
         sysLog.setOldValue(before == null ? "" : JsonMapper.obj2String(before));
         sysLog.setNewValue(after == null ? "" : JsonMapper.obj2String(after));
         sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());

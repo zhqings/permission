@@ -26,6 +26,8 @@ public class SysRoleAclService {
     private SysRoleAclMapper sysRoleAclMapper;
     @Resource
     private SysLogMapper sysLogMapper;
+    @Resource
+    private SysLogService sysLogService;
 
     /*
      * create by zhang 2019/5/31
